@@ -18,7 +18,7 @@ namespace Tests
             using var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(input));
 
             // Act
-            using var outputStream = AttributeFirstJsonTransformer.Transform(inputStream);
+            using var outputStream = AttributeFirstJsonStreamTransformer.Transform(inputStream);
 
             // Assert
             var output = new StreamReader(outputStream).ReadToEnd();

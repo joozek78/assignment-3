@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace JsonParser.Parser
 {
-    public static class AttributeFirstJsonTransformer
+    public static class AttributeFirstJsonStreamTransformer
     {
         public static Stream Transform(Stream inputStream)
         { 

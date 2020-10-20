@@ -23,7 +23,7 @@ namespace JsonParser
         private static Stream TransformIntoStream(byte[] lines)
         {
             using var memoryStream = new MemoryStream(lines);
-            return AttributeFirstJsonTransformer.Transform(memoryStream);
+            return AttributeFirstJsonStreamTransformer.Transform(memoryStream);
         }
 
         static string ReadLines()
