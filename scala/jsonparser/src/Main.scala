@@ -5,17 +5,24 @@ import java.nio.charset.StandardCharsets.UTF_8
 import parser.AttributeFirstJsonTransformer
 
 import scala.io.{Source, StdIn}
+import scala.util.Using
 
 object Main extends App {
   println("Paste your json content below and end with an empty line:")
 
-  // Modify the code below to be stream safe
-  val input = Source.fromInputStream(
-    new ByteArrayInputStream(readLines().getBytes(UTF_8))
+  // note to reviewer: this code assumes that transform function will be done with its input by the time it returns,
+  // i.e. it doesn't support a case where... todo add comment to transform?
+  
+  Using(createInputStream) { input => AttributeFirstJsonTransformer.transform(input) }
+    .flatMap(output => Using(output) { output =>
+      println("Output:")
+      output.getLines.foreach(println)
+    })
+    .get
+
+  private def createInputStream = 
+    Source.fromInputStream(new ByteArrayInputStream(readLines().getBytes(UTF_8))
   )
-  val output = AttributeFirstJsonTransformer.transform(input)
-  println("Output:")
-  output.getLines.foreach(println)
 
   private def readLines() =
     Iterator

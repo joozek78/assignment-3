@@ -14,10 +14,16 @@ namespace JsonParser
             Console.WriteLine("Paste your json content below and end with an empty line:");
 
             // Modify the code below to be stream safe
-            var input = new MemoryStream(Encoding.ASCII.GetBytes(ReadLines()));
-            var output = AttributeFirstJsonTransformer.Transform(input);
+            using var output = TransformIntoStream(Encoding.UTF8.GetBytes(ReadLines()));
             Console.WriteLine("Output:");
-            Console.WriteLine(new StreamReader(output).ReadToEnd());
+            using var streamReader = new StreamReader(output);
+            Console.WriteLine(streamReader.ReadToEnd());
+        }
+
+        private static Stream TransformIntoStream(byte[] lines)
+        {
+            using var memoryStream = new MemoryStream(lines);
+            return AttributeFirstJsonTransformer.Transform(memoryStream);
         }
 
         static string ReadLines()
