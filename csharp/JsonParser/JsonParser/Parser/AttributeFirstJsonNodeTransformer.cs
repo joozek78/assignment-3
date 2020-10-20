@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace JsonParser.Parser
@@ -9,14 +10,24 @@ namespace JsonParser.Parser
         {
             return inputToken switch
             {
-                JObject obj => ReorderTokens(obj),
+                JObject obj => CreateJObject(ReorderTokens(obj)),
                 _ => inputToken
             };
         }
 
-        private JToken ReorderTokens(JObject jObject)
+        private JObject CreateJObject(IEnumerable<(string, JToken)> contents)
         {
-            var output = new JObject();
+            var jObject = new JObject();
+            foreach (var (key, value) in contents)
+            {
+                jObject.Add(key, value);
+            }
+            
+            return jObject;
+        }
+
+        private IEnumerable<(string, JToken)> ReorderTokens(JObject jObject)
+        {
             var tail = new List<(string, JToken)>();
             foreach (var (key, value) in jObject)
             {
@@ -26,22 +37,14 @@ namespace JsonParser.Parser
                 }
                 else
                 {
-                    AddWithReorder(output, key, value);
+                    yield return (key, Transform(value));
                 }
             }
-
+            
             foreach (var (key, value) in tail)
             {
-                AddWithReorder(output, key, value);
+                yield return (key, Transform(value));
             }
-
-            return output;
-        }
-
-        private void AddWithReorder(JObject target, string key, JToken value)
-        {
-            var valueToAdd = value is JObject obj ? ReorderTokens(obj) : value;
-            target.Add(key, valueToAdd);
         }
     }
 }
